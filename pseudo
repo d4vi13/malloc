@@ -1,4 +1,4 @@
-block = topoAtualHeap
+block = topoInicialHeap
 while(&block != topoInicial)
     if(block->used || block->size < requested)
         block = &block + block->size + 16 bytes 
@@ -13,8 +13,10 @@ while(&block != topoInicial)
 
 
 if (&block == topoAtualHeap)
-    topoAtualHeap += teto(size/ 4096) * 4096
+    aux = topoAtualHeap
+    topoAtualHeap += teto(requested/ 4096) * 4096
     brk(topoAtualHeap)
+    alocaMem(requested)
     
     
 

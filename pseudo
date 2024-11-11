@@ -1,0 +1,13 @@
+block = topoAtualHeap
+while(&block != topoInicial)
+    if(block->used)
+        block = &block + block->size + 16 bytes 
+    
+
+
+if (&block == topoAtualHeap)
+    topoAtualHeap += teto(size/ 4096) * 4096
+    brk(topoAtualHeap)
+    
+    
+

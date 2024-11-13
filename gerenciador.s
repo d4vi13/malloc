@@ -34,10 +34,11 @@ finalizaAlocador:
 
 // r8 contem o valor a ser alocado
 // r10 eh o bloco a ser avaliado
+// Aqui esta implementado first fit, deve-se trocar para best fit
 alocaMem:
     pushq %rbp
     movq %rsp, %rbp
-    subq $16, %rsp
+    subq $24, %rsp
     movq %rdi, -8(%rbp)
     movq topoInicialHeap, %r10
 while: 
@@ -75,8 +76,20 @@ aloca:
     addq %rax, %rsi  
     # deve botar em rax o ponteiro certo
     call alocaBloco
-    jmp out
+    jmp exit
 out:
+    movq topoAtualHeap, %r10
+    movq %r10, -24(%rbp)
+    movq %r8, %rdi
+    movq $4096, %rsi
+    call ceil_div 
+    movq %rax, %r12
+    mult 
+    
+    jmp aloca
+
+
+exit:
     
 
 liberaMem:

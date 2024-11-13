@@ -14,8 +14,8 @@ if (block == topoAtualHeap)
     aux = topoAtualHeap
     topoAtualHeap += teto(requested/ 4096) * 4096
     brk(topoAtualHeap)
+    createBlock(
     alocaBlock(aux, requested)
-    alocaMem(requested)
     
     
 

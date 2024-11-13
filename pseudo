@@ -1,11 +1,12 @@
 block = topoInicialHeap
-while(&block != topoAtualHeap)
+while(block != topoAtualHeap)
     if(block->used || block->size < requested)
-        block = &block + block->size + 16 bytes 
+        block = block + block->size + 16 bytes 
         continue
     else
         # retorna 0 se deu, o tam se nao deu
-        err = createBlock(block + block->size, block->size - requested - 16)
+        # se o segundo parametro for menor que zero vai dar erro
+        err = createBlock(block + requested + 16 , block->size - requested - 16)
         alocaBlock(block, requested+err)
         break
         

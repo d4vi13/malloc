@@ -1,21 +1,19 @@
 block = topoInicialHeap
-while(&block != topoInicial)
+while(&block != topoAtualHeap)
     if(block->used || block->size < requested)
         block = &block + block->size + 16 bytes 
         continue
     else
-        add = 0
         # retorna 0 se deu, o tam se nao deu
         err = createBlock(block + block->size, block->size - requested - 16)
-        block->used = 1
-        block->size = requested + err
+        alocaBlock(block, requested+err)
+        break
         
-
-
-if (&block == topoAtualHeap)
+if (block == topoAtualHeap)
     aux = topoAtualHeap
     topoAtualHeap += teto(requested/ 4096) * 4096
     brk(topoAtualHeap)
+    alocaBlock(aux, requested)
     alocaMem(requested)
     
     

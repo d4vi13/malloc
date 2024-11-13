@@ -22,6 +22,14 @@ iniciaAlocador:
     ret     
 
 finalizaAlocador:
+    pushq %rbp
+    movq %rsp, %rbp
+    movq $topoInicialHeap, %rdi
+    movq $12, %rax
+    syscall
+    popq %rbp
+    ret 
+
 
 alocaMem:
 

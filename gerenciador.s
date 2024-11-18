@@ -33,11 +33,29 @@ finalizaAlocador:
     popq %rbp
     ret 
 
+
+ceil_div:
+    pushq %rbp
+    movq %rsp, %rbp
+    
+    popq %rbp
+    ret    
+
 criaBloco:
     pushq %rbp
     movq %rsp, %rbp
+    
+    movq %rsi, %rax
+    imul $-1, %rax
+
+    movq $0, %r15
+    cmp %r15, %rsi
+    jle out_if
+
     movq %rdx, (%rdi)
     movq %rsi, 8(%rdi)
+    movq $0, %rax
+out_if:
     popq %rbp
     ret 
 
@@ -45,8 +63,10 @@ alocaBloco:
     push %rbp
     movq %rsp, %rbp
     subq $16, %rsp
-    movq %rdi, -8(%rbp) // salva endereco base
-    movq %rsi, -16(%rbp) // salva tamanho a ser alocado 
+    // salva endereco base
+    movq %rdi, -8(%rbp) 
+    // salva tamanho a ser alocado 
+    movq %rsi, -16(%rbp) 
 
     // size - requested - 16
     movq 8(%rdi), %rsi
@@ -77,17 +97,19 @@ alocaMem:
     subq $24, %rsp
     movq %rdi, -8(%rbp)
     movq topoInicialHeap, %r10
-    movq topoInicialHeap, bloco
+    movq %r10, bloco
 while: 
     movq -8(%rbp), %r8
-    cmpq topoAtualHeap, %r10
+    movq topoAtualHeap, %r15
+    cmpq %r15, %r10
     je out_while
 
     // se alguma das condições forem ativadas va para o proximo bloco
-    cmpq (%r10), 1
+    movq $1, %r15
+    cmpq (%r10), %r15 
     je next
     // r8 > 8(%r10) verificar se realmente eh isso
-    cmpq %r8 8(%r10)
+    cmpq %r8, 8(%r10)
     jl next
 
     // bloco eh adequado 
@@ -102,8 +124,8 @@ next:
     jmp while 
 
 out_while:
-    movq topoAtualHeap, bloco
     movq topoAtualHeap, %r10
+    movq %r10, bloco
     
     // teto(requested/ 4096)
     movq %r8, %rdi
@@ -112,7 +134,7 @@ out_while:
     
     // new = ceil_div(requested, 4096) * 4096
     movq %rax, %r12
-    mult $4096, %r12
+    imul $4096, %r12
 
     // topoAtualHeap += new + 16
     addq $16, %r12

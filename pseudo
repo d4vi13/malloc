@@ -4,18 +4,17 @@ while(block != topoAtualHeap)
         block = block + block->size + 16 bytes 
         continue
     else
-        # retorna 0 se deu, o tam se nao deu
-        # se o segundo parametro for menor que zero vai dar erro
-        err = createBlock(block + requested + 16 , block->size - requested - 16)
-        alocaBlock(block, requested+err)
         break
         
 if (block == topoAtualHeap)
-    aux = topoAtualHeap
+    block = topoAtualHeap
     topoAtualHeap += teto(requested/ 4096) * 4096
     brk(topoAtualHeap)
-    createBlock(
-    alocaBlock(aux, requested)
-    
-    
 
+alocaBloco(block, requested)
+    
+//must be called only if theres enough size     
+alocaBloco(baseaddr, size)
+    // if second parameters is negative/nulo means theres not enough space 
+    err = criaBloco(block+requested + 16, block->size - requested -16, False)
+    criaBloco(block, requested+err, True)

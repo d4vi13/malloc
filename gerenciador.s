@@ -1,11 +1,11 @@
 .section .data
     msg: .string "Topo inicial da heap: %ld\n\0" 
     printf_alloc: .string "Chamada do printf para alocação de seu buffer operacional\n"
-    num: .quad 5
-
+    
 .section .bss:
     .lcomm topoInicialHeap, 8
     .lcomm topoAtualHeap, 8
+    .lcomm bloco, 8
 
 .section .text
 .globl iniciaAlocador, finalizaAlocador, alocaMem, liberaMem
@@ -20,6 +20,7 @@ iniciaAlocador:
     syscall
     movq %rax, topoInicialHeap
     movq %rax, topoAtualHeap
+    movq %rax, bloco
     popq %rbp
     ret     
 
@@ -32,6 +33,41 @@ finalizaAlocador:
     popq %rbp
     ret 
 
+criaBloco:
+    pushq %rbp
+    movq %rsp, %rbp
+    movq %rdx, (%rdi)
+    movq %rsi, 8(%rdi)
+    popq %rbp
+    ret 
+
+alocaBloco:
+    push %rbp
+    movq %rsp, %rbp
+    subq $16, %rsp
+    movq %rdi, -8(%rbp) // salva endereco base
+    movq %rsi, -16(%rbp) // salva tamanho a ser alocado 
+
+    // size - requested - 16
+    movq 8(%rdi), %rsi
+    subq -16(%rbp), %rsi
+    subq $16, %rsi
+
+    // endereco base + requested + 16
+    addq %rsi, %rdi
+    addq $16, %rdi
+   
+    movq $0, %rdx 
+    call criaBloco
+
+    // criaBloco(enderecoBase, requested + err, True)    
+    movq -8(%rbp), %rdi 
+    movq -16(%rbp), %rsi
+    addq %rax, %rsi
+    movq $1, %rdx
+
+    call criaBloco 
+
 // r8 contem o valor a ser alocado
 // r10 eh o bloco a ser avaliado
 // Aqui esta implementado first fit, deve-se trocar para best fit
@@ -41,56 +77,63 @@ alocaMem:
     subq $24, %rsp
     movq %rdi, -8(%rbp)
     movq topoInicialHeap, %r10
+    movq topoInicialHeap, bloco
 while: 
     movq -8(%rbp), %r8
     cmpq topoAtualHeap, %r10
-    je out
+    je out_while
+
+    // se alguma das condições forem ativadas va para o proximo bloco
     cmpq (%r10), 1
-    jne aloca
-    // r8 <= 8(%r10) verificar se realmente eh isso
+    je next
+    // r8 > 8(%r10) verificar se realmente eh isso
     cmpq %r8 8(%r10)
-    jge aloca
+    jl next
+
+    // bloco eh adequado 
+    movq %r10, bloco
+    jmp aloca
+
+// move r10 para o proximo bloco
+next:
     movq %r10, %r9
-    addq 8(%r10), %r9
-    addq $16, %r9
-    movq %r9, %r10
+    addq 8(%r9), %r10
+    addq $16, %r10
     jmp while 
-aloca:    
-    # salva o bloco para alocar dps
-    movq %r10, -16(%rbp)
-    # primeiro parametro block + requested + 16
-    movq %r10, %rdi
-    addq %r8, %rdi
-    addq $16, %rdi
-    # segundo parametro block->size - requested - 16
-    movq 8(%r10), %rsi
-    subq %r8, %rsi
-    subq $16, %rsi
-    call criaBloco
-    #restaura r10 e r8
-    movq -16(%rbp), %r10 
-    movq -8(%rbp), %r8 
-    movq %r10, %rdi
-    # tamanho do bloco, mais um possivel retornado da criaBloco
-    movq %r8, %rsi
-    addq %rax, %rsi  
-    # deve botar em rax o ponteiro certo
-    call alocaBloco
-    jmp exit
-out:
+
+out_while:
+    movq topoAtualHeap, bloco
     movq topoAtualHeap, %r10
-    movq %r10, -24(%rbp)
+    
+    // teto(requested/ 4096)
     movq %r8, %rdi
     movq $4096, %rsi
     call ceil_div 
-    movq %rax, %r12
-    mult 
     
-    jmp aloca
+    // new = ceil_div(requested, 4096) * 4096
+    movq %rax, %r12
+    mult $4096, %r12
 
+    // topoAtualHeap += new + 16
+    addq $16, %r12
+    addq %r12, topoAtualHeap 
+
+    // brk(bloco)
+    movq topoAtualHeap, %rdi
+    movq $12, %rax
+    syscall
+
+    jmp aloca
+aloca:    
+    movq bloco, %rdi
+    movq -8(%rbp) , %rsi
+    call alocaBloco
+    jmp exit
 
 exit:
-    
+    addq $24, %rsp
+    popq %rbp
+    ret    
 
 liberaMem:
 

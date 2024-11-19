@@ -37,6 +37,15 @@ finalizaAlocador:
 ceil_div:
     pushq %rbp
     movq %rsp, %rbp
+
+    movq %rdi, %rax
+    cqto
+    idivq %rsi
+    testq %rdx, %rdx
+    jz no_remainder
+    addq $1, %rax
+
+no_remainder:
     
     popq %rbp
     ret    
@@ -49,7 +58,7 @@ criaBloco:
     imul $-1, %rax
 
     movq $0, %r15
-    cmp %r15, %rsi
+    cmpq %r15, %rsi
     jle out_if
 
     movq %rdx, (%rdi)
@@ -74,7 +83,7 @@ alocaBloco:
     subq $16, %rsi
 
     // endereco base + requested + 16
-    addq %rsi, %rdi
+    addq -16(%rbp), %rdi
     addq $16, %rdi
    
     movq $0, %rdx 
@@ -87,6 +96,9 @@ alocaBloco:
     movq $1, %rdx
 
     call criaBloco 
+    addq $16, %rsp
+    popq %rbp 
+    ret
 
 // r8 contem o valor a ser alocado
 // r10 eh o bloco a ser avaliado
@@ -134,7 +146,10 @@ out_while:
     
     // new = ceil_div(requested, 4096) * 4096
     movq %rax, %r12
-    imul $4096, %r12
+    imulq $4096, %r12
+
+    // save the amount to be allocated
+    movq %r12, -16(%rbp)
 
     // topoAtualHeap += new + 16
     addq $16, %r12
@@ -144,12 +159,19 @@ out_while:
     movq topoAtualHeap, %rdi
     movq $12, %rax
     syscall
+  
+    movq bloco, %rdi  
+    movq -16(%rbp), %rsi 
+    movq $0, %rdx
+    call criaBloco
 
     jmp aloca
 aloca:    
     movq bloco, %rdi
     movq -8(%rbp) , %rsi
     call alocaBloco
+    movq bloco, %rax
+    addq $16, %rax
     jmp exit
 
 exit:

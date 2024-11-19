@@ -16,7 +16,7 @@ exemplo.o: meuAlocador.h
 gerenciador.o: 
 	$(AS) gerenciador.s -o gerenciador.o -g
 
-PHONY=clean
+.PHONY=clean
 clean:
 	-rm *.o
 purge:

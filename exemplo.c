@@ -32,13 +32,12 @@ int main () {
     printf("%p %ld %ld\n",md, md->used, md->size);
     d = (void *) alocaMem(500);
     md = d - 16;
-    liberaMem(d);
     printf("%p %ld %ld\n",md, md->used, md->size);
 
     printf("%ld\n", mb-ma); 
     printf("%ld\n", md-mb); 
     printf("%ld\n", mc-mb); 
-//  imprimeMapa();                  // ################**********##############****
+  imprimeMapa();                  // ################**********##############****
 //  liberaMem(a);
 //  imprimeMapa();                  // ################----------##############****
 //  liberaMem(b);                   // ################----------------------------

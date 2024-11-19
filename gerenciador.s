@@ -1,6 +1,8 @@
 .section .data
     msg: .string "Topo inicial da heap: %ld\n\0" 
     printf_alloc: .string "Chamada do printf para alocação de seu buffer operacional\n"
+    hashtag: .string "#"
+    asterisco: .string "*"
     
 .section .bss:
     .lcomm topoInicialHeap, 8
@@ -8,7 +10,7 @@
     .lcomm bloco, 8
 
 .section .text
-.globl iniciaAlocador, finalizaAlocador, alocaMem, liberaMem
+.globl iniciaAlocador, finalizaAlocador, alocaMem, liberaMem, imprimeMapa
 
 iniciaAlocador:
     pushq %rbp
@@ -102,6 +104,7 @@ alocaBloco:
 
 // r8 contem o valor a ser alocado
 // r10 eh o bloco a ser avaliado
+// r12 ira guardar o melhor bloco
 // Aqui esta implementado first fit, deve-se trocar para best fit
 alocaMem:
     pushq %rbp
@@ -110,6 +113,7 @@ alocaMem:
     movq %rdi, -8(%rbp)
     movq topoInicialHeap, %r10
     movq %r10, bloco
+    movq topoAtualHeap, %r12
 while: 
     movq -8(%rbp), %r8
     movq topoAtualHeap, %r15
@@ -124,9 +128,20 @@ while:
     cmpq %r8, 8(%r10)
     jl next
 
-    // bloco eh adequado 
-    movq %r10, bloco
-    jmp aloca
+    // garante que ao achar o primeiro bloco apropriado ele eh tomado
+    movq topoAtualHeap, %r15
+    cmpq %r15, %r12
+    je best
+
+    movq 8(%r10), %r15
+    movq 8(%r12), %r14
+    cmpq %r15, %r14
+    jl best 
+    jmp next 
+best:
+    movq %r10, %r12
+    movq %r12, bloco
+    jmp next
 
 // move r10 para o proximo bloco
 next:
@@ -137,6 +152,9 @@ next:
 
 out_while:
     movq topoAtualHeap, %r10
+    cmpq %r10, %r12
+    jne aloca 
+
     movq %r10, bloco
     
     // teto(requested/ 4096)
@@ -188,8 +206,53 @@ liberaMem:
     popq %rbp
     ret 
 
+imprimeMapa:
+    pushq %rbp
+    movq %rsp, %rbp
+    subq $16, %rsp
+    movq topoInicialHeap, %r10
+while_imprime:
+    movq topoAtualHeap, %r15
+    cmpq %r10, %r15
+    je out_imprime
+    movq %r10, -8(%rbp)
 
+    movq $16, %r8
+for_metadata:
+    movq $0, %r15
+    cmpq %r8,%r15 
+    je out_for 
+    movq %r8, -16(%rbp)
+    movq $hashtag, %rdi
+    call printf
+    movq -16(%rbp), %r8
+    subq $1, %r8    
+    jmp for_metadata 
+out_for:
 
+    movq -8(%rbp), %r8
+    movq 8(%r8), %r8 
+while_block:
+    movq $0, %r15
+    cmpq %r8, %r15 
+    je out_block 
+    movq %r8, -16(%rbp)
+    movq $asterisco, %rdi
+    call printf
+    movq -16(%rbp), %r8
+    subq $1, %r8    
+    jmp while_block
+out_block:
+    movq -8(%rbp), %r9
+    addq 8(%r9), %r10
+    addq $16, %r10    
+    jmp while_imprime
+ 
+out_imprime:
+
+    addq $16, %rsp
+    popq %rbp
+    ret
 
 
 

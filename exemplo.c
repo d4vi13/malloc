@@ -16,6 +16,14 @@ int main () {
 
 //  imprimeMapa();                  // <vazio>
 //
+    
+    imprimeMapa();
+    a = (void *) alocaMem(0);
+    printf("a\n");
+    imprimeMapa();
+    printf("a\n");
+    a = (void *) alocaMem(-10);
+    printf("a\n");
     a = (void *) alocaMem(10);
     ma = a - 16;
     printf("%p %ld %ld\n",ma,ma->used, ma->size);

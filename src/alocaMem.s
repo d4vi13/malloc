@@ -9,6 +9,12 @@ alocaMem:
     pushq %rbp
     movq %rsp, %rbp
     subq $24, %rsp
+
+    movq $0, %rax
+    movq $0, %r15
+    cmpl %r15d, %edi
+    jle exit 
+
     movq %rdi, -8(%rbp)
     movq topoInicialHeap, %r10
     movq %r10, bloco

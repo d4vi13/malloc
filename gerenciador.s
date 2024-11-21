@@ -143,9 +143,9 @@ best:
 
 // move r10 para o proximo bloco
 next:
-    movq %r10, %r9
-    addq 8(%r9), %r10
-    addq $16, %r10
+    movq %r10, %rdi
+    call proximo_bloco
+    movq %rax, %r10
     jmp while 
 
 out_while:

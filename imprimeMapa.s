@@ -54,16 +54,21 @@ usa_str_mais:
     jmp imprime_bloco
 
 imprime_bloco:
-    // Inicia r8 com o bloco inicial
+// Bota em r8 o tamanho do bloco a ser impresso
     movq -8(%rbp), %r8
     movq 8(%r8), %r8
 while_block:
+// Checa se tudo ja foi impresso
     movq $0, %r15
     cmpq %r8, %r15
     je out_block
+
+// Imprime o caracter
     movq %r8, -16(%rbp)
     movq -24(%rbp), %rdi
     call printf
+
+// Avanca
     movq -16(%rbp), %r8
     subq $1, %r8
     jmp while_block

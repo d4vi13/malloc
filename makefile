@@ -1,5 +1,5 @@
 TARGET = malloc
-OBJS = exemplo.o gerenciador.o
+OBJS = exemplo.o gerenciador.o imprimeMapa.o
 
 LFLAGS = -dynamic-linker /lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 /usr/lib/x86_64-linux-gnu/crt1.o /usr/lib/x86_64-linux-gnu/crti.o /usr/lib/x86_64-linux-gnu/crtn.o -lc -z noexecstack 
 
@@ -15,6 +15,9 @@ exemplo.o: meuAlocador.h
 
 gerenciador.o: 
 	$(AS) gerenciador.s -o gerenciador.o -g
+
+imprimeMapa.o: 
+	$(AS) imprimeMapa.s -o imprimeMapa.o -g
 
 .PHONY=clean
 clean:

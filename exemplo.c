@@ -17,17 +17,21 @@ int main () {
 //  imprimeMapa();                  // <vazio>
 //
     
-    imprimeMapa();
+/*    imprimeMapa();
     a = (void *) alocaMem(0);
     printf("a\n");
     imprimeMapa();
     printf("a\n");
     a = (void *) alocaMem(-10);
     printf("a\n");
-    a = (void *) alocaMem(10);
+    */
+        a = (void *) alocaMem(4096);
+    
     ma = a - 16;
     printf("%p %ld %ld\n",ma,ma->used, ma->size);
-//  imprimeMapa();                  // ################**********
+    printf("%p %ld %ld\n",ma,ma+ma->size +8, ma->size);
+
+    imprimeMapa();                  // ################**********
     b = (void *) alocaMem(4);
     mb = b - 16;
     printf("%p %ld %ld\n",mb, mb->used, mb->size);

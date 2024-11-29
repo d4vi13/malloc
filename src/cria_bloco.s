@@ -6,7 +6,9 @@ criaBloco:
     movq %rsp, %rbp
 
     movq %rsi, %rax
-    imul $-1, %rax
+    addq $16, %rax
+    //imul $-1, %rax
+
 
     movq $0, %r15
     cmpq %r15, %rsi                                                                                                                                                       

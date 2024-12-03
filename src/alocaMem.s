@@ -62,14 +62,14 @@ out_while:
 
     movq %r10, bloco
 
-    // teto(requested/ 4096)
+    // teto(requested/ tam_bloco)
     movq %r8, %rdi
-    movq $4096, %rsi
+    movq $32, %rsi
     call teto_divisao
 
-    // new = teto_divisao(requested, 4096) * 4096
+    // new = teto_divisao(requested, tam_bloco) * tam_bloco
     movq %rax, %r12
-    imulq $4096, %r12
+    imulq $32, %r12
 
     // save the amount to be allocated
     movq %r12, -16(%rbp)

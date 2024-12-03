@@ -2,6 +2,7 @@
     menos: .string "-"
     mais: .string "+"
     hashtag: .string "#"
+    breakline: .string "\n"
 
 .section .text
 .globl imprimeMapa
@@ -79,6 +80,10 @@ out_block:
     jmp while_imprime
 
 out_imprime:
+
+    movq $breakline, %rdi
+    call printf
+
     addq $32, %rsp
     popq %rbp
     ret

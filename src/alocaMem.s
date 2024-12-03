@@ -36,14 +36,14 @@ while:
     // garante que ao achar o primeiro bloco apropriado ele eh tomado
     movq topoAtualHeap, %r15
     cmpq %r15, %r12
-    je best
+    je worst
 
     movq 8(%r10), %r15
     movq 8(%r12), %r14
     cmpq %r15, %r14
-    jl best
+    jg worst
     jmp next
-best:
+worst:
     movq %r10, %r12
     movq %r12, bloco
     jmp next

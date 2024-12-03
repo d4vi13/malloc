@@ -41,7 +41,7 @@ while:
     movq 8(%r10), %r15
     movq 8(%r12), %r14
     cmpq %r15, %r14
-    jl best
+    jg best
     jmp next
 best:
     movq %r10, %r12

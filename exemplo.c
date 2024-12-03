@@ -25,8 +25,11 @@ int main () {
     a = (void *) alocaMem(-10);
     printf("a\n");
     */
-        a = (void *) alocaMem(4096);
-    
+        a = (void *) alocaMem(4000);
+        liberaMem(a);
+        a = (void *) alocaMem(20);
+        imprimeMapa();
+/*    
     ma = a - 16;
     printf("%p %ld %ld\n",ma,ma->used, ma->size);
     printf("%p %ld %ld\n",ma,ma+ma->size +8, ma->size);
@@ -49,7 +52,7 @@ int main () {
     printf("%ld\n", mb-ma); 
     printf("%ld\n", md-mb); 
     printf("%ld\n", mc-mb); 
-  imprimeMapa();                  // ################**********##############****
+  imprimeMapa();*/                  // ################**********##############****
 //  liberaMem(a);
 //  imprimeMapa();                  // ################----------##############****
 //  liberaMem(b);                   // ################----------------------------
